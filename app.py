@@ -1,11 +1,12 @@
 import streamlit as st
 import pandas as pd
 import joblib
-from xgboost import XGBRegressor
 import numpy as np
 
-# Load model and preprocessing artifacts
-model = XGBRegressor()
+from xgboost import Booster
+
+# Load model using Booster (avoids sklearn compatibility issues)
+model = Booster()
 model.load_model('imdb_model.json')
 
 certificate_encoder = joblib.load('certificate_encoder.joblib')
