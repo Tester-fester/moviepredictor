@@ -70,17 +70,24 @@ if submitted:
         )
 
         # Combine features
-        final_df = pd.concat([
-            df_input[['Runtime', 'Released_Year', 'Director_Avg_Rating']],
-            cert_encoded,
-            director_encoded,
-            genre_encoded,
-            actors_encoded
-        ], axis=1).reindex(columns=preprocessing_data['feature_names'], fill_value=0)
+        # Combine features
+final_df = pd.concat([
+    df_input[['Runtime', 'Released_Year', 'Director_Avg_Rating']],
+    cert_encoded,
+    director_encoded,
+    genre_encoded,
+    actors_encoded
+], axis=1).reindex(columns=preprocessing_data['feature_names'], fill_value=0)
 
-        # Predict
-        prediction = model.predict(final_df)
-        st.success(f"Predicted IMDB Rating: {prediction[0]:.2f}")
+# Convert to DMatrix with explicit feature names
+dtest = xgb.DMatrix(
+    final_df.values.astype(np.float32),  # Ensure numeric type
+    feature_names=final_df.columns.tolist()
+)
+
+# Predict
+prediction = model.predict(dtest)[0]
+st.success(f"Predicted IMDB Rating: {prediction:.2f}")
         
     except Exception as e:
         st.error(f"Error: {str(e)}")
